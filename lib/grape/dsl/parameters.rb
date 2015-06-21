@@ -77,6 +77,14 @@ module Grape
         end
       end
 
+      def if_given(base_attr, opts)
+        if attrs = opts[:require]
+          validates(attrs, dependent_on: base_attr)
+        else
+          fail "Must pass :require option with a list of parameters to require."
+        end
+      end
+
       def mutually_exclusive(*attrs)
         validates(attrs, mutual_exclusion: true)
       end
