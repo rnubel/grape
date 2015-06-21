@@ -11,6 +11,7 @@ module Grape
         @api      = opts[:api]
         @optional = opts[:optional] || false
         @type     = opts[:type]
+        @dependent_on = opts[:dependent_on]
         @declared_params = []
 
         instance_eval(&block) if block_given?
@@ -19,13 +20,14 @@ module Grape
       end
 
       def should_validate?(parameters)
+        return false if @dependent_on && parameters[@dependent_on].blank?
         return false if @optional && params(parameters).respond_to?(:all?) && params(parameters).all?(&:blank?)
         return true if parent.nil?
         parent.should_validate?(parameters)
       end
 
       def full_name(name)
-        return "#{@parent.full_name(@element)}[#{name}]" if @parent
+        return "#{@parent.full_name(@element)}[#{name}]" if @parent && !@dependent_on
         name.to_s
       end
 

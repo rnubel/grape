@@ -77,6 +77,10 @@ module Grape
         end
       end
 
+      def if_given(attr, &block)
+        self.class.new(api: @api, type: Hash, parent: self, dependent_on: attr, &block)
+      end
+
       def mutually_exclusive(*attrs)
         validates(attrs, mutual_exclusion: true)
       end
