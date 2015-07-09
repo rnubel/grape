@@ -92,6 +92,12 @@ module Grape
         top_level_setting.inherit_from other_settings.point_in_time_copy
 
         endpoints.each(&:reset_routes!)
+        endpoints.each { |e|
+          e.top_level_setting.inherit_from(top_level_setting)
+          e.inheritable_setting.inherit_from(inheritable_setting)
+        }
+
+        #require 'pry';binding.pry
 
         @routes = nil
       end
@@ -101,7 +107,8 @@ module Grape
     # this API into a usable form.
     def initialize
       @route_set = Rack::Mount::RouteSet.new
-      add_head_not_allowed_methods_and_options_methods
+      #add_head_not_allowed_methods_and_options_methods
+      #require 'pry';binding.pry
       self.class.endpoints.each do |endpoint|
         endpoint.mount_in(@route_set)
       end

@@ -150,6 +150,7 @@ module Grape
           path = compile_path(prepared_path, anchor && !options[:app], prepare_routes_requirements)
           request_method = (method.to_s.upcase unless method == :any)
 
+          require 'pry'; binding.pry
           Route.new(options[:route_options].clone.merge(
                       prefix: namespace_inheritable(:root_prefix),
                       version: namespace_inheritable(:version) ? namespace_inheritable(:version).join('|') : nil,

@@ -2383,6 +2383,7 @@ describe Grape::API do
           end
           mount TestAPI => '/mounted'
           mount TestAPI => '/double'
+          require 'pry'; binding.pry
         end
 
         get "/mounted/cool/awesome"

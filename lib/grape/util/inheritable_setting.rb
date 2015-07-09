@@ -57,7 +57,7 @@ module Grape
 
       # Create a point-in-time copy of this settings instance, with clones of
       # all our values. Note that, should this instance's parent be set or
-      # changed via #inherit_from, it will copy that inheritence to any copies
+      # changed via #inherit_from, it will copy that inheritance to any copies
       # which were made.
       def point_in_time_copy
         self.class.new.tap do |new_setting|
