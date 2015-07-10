@@ -96,6 +96,10 @@ module Grape
       @routes = nil
     end
 
+    def dup
+      self.class.new(inheritable_setting, @options, &@source)
+    end
+
     def mount_in(route_set)
       if endpoints
         endpoints.each do |e|
@@ -150,7 +154,6 @@ module Grape
           path = compile_path(prepared_path, anchor && !options[:app], prepare_routes_requirements)
           request_method = (method.to_s.upcase unless method == :any)
 
-          require 'pry'; binding.pry
           Route.new(options[:route_options].clone.merge(
                       prefix: namespace_inheritable(:root_prefix),
                       version: namespace_inheritable(:version) ? namespace_inheritable(:version).join('|') : nil,
@@ -228,8 +231,6 @@ module Grape
 
       # Retrieve validations from this namespace and all parent namespaces.
       validation_errors = []
-
-      # require 'pry-byebug'; binding.pry
 
       route_setting(:saved_validations).each do |validator|
         begin

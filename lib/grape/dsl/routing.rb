@@ -75,13 +75,11 @@ module Grape
             in_setting = inheritable_setting
 
             _app = Class.new(app)
-            _app.endpoints.concat(app.endpoints.deep_dup)
+            _app.endpoints.concat(app.endpoints.map(&:dup))
             _app.endpoints.each do |e|
               e.inheritable_setting.inherit_from _app.inheritable_setting
               e.top_level_setting.inherit_from _app.top_level_setting
             end
-
-            require 'pry';binding.pry
 
             if _app.respond_to?(:inheritable_setting, true)
               mount_path = Rack::Mount::Utils.normalize_path(path)
@@ -94,8 +92,6 @@ module Grape
               _app.change!
               change!
             end
-
-            require 'pry';binding.pry
 
             endpoints << Grape::Endpoint.new(
               in_setting,
