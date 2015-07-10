@@ -74,22 +74,22 @@ module Grape
           mounts.each_pair do |app, path|
             in_setting = inheritable_setting
 
-            _app = Class.new(app)
-            _app.endpoints.concat(app.endpoints.map(&:dup))
-            _app.endpoints.each do |e|
-              e.inheritable_setting.inherit_from _app.inheritable_setting
-              e.top_level_setting.inherit_from _app.top_level_setting
+            clone = Class.new(app)
+            clone.endpoints.concat(app.endpoints.map(&:copy))
+            clone.endpoints.each do |e|
+              e.inheritable_setting.inherit_from clone.inheritable_setting
+              e.top_level_setting.inherit_from clone.top_level_setting
             end
 
-            if _app.respond_to?(:inheritable_setting, true)
+            if clone.respond_to?(:inheritable_setting, true)
               mount_path = Rack::Mount::Utils.normalize_path(path)
-              _app.top_level_setting.namespace_stackable[:mount_path] =  mount_path
+              clone.top_level_setting.namespace_stackable[:mount_path] =  mount_path
 
-              _app.inherit_settings(inheritable_setting)
+              clone.inherit_settings(inheritable_setting)
 
-              in_setting = _app.top_level_setting
+              in_setting = clone.top_level_setting
 
-              _app.change!
+              clone.change!
               change!
             end
 
@@ -97,7 +97,7 @@ module Grape
               in_setting,
               method: :any,
               path: path,
-              app: _app,
+              app: clone,
               for: self
             )
           end

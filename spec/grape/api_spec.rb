@@ -2378,20 +2378,20 @@ describe Grape::API do
         subject.namespace :cool do
           class TestAPI < Grape::API
             get '/awesome' do
-              "sauce"
+              'sauce'
             end
           end
           mount TestAPI => '/mounted'
           mount TestAPI => '/double'
         end
 
-        get "/mounted/cool/awesome"
+        get '/mounted/cool/awesome'
         expect(last_response.status).to eq(200)
-        expect(last_response.body).to eq("sauce")
+        expect(last_response.body).to eq('sauce')
 
-        get "/double/cool/awesome"
+        get '/double/cool/awesome'
         expect(last_response.status).to eq(200)
-        expect(last_response.body).to eq("sauce")
+        expect(last_response.body).to eq('sauce')
       end
 
       it 'mounts on a nested path' do

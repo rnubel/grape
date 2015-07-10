@@ -96,7 +96,7 @@ module Grape
       @routes = nil
     end
 
-    def dup
+    def copy
       self.class.new(inheritable_setting, @options, &@source)
     end
 
