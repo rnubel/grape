@@ -2404,6 +2404,7 @@ describe Grape::API do
         APP3 = subject
         APP3.mount APP1 => '/app1'
         APP1.mount APP2 => '/app2'
+        require 'pry';binding.pry
         get '/app1/app2/nice'
         expect(last_response.status).to eq(200)
         expect(last_response.body).to eq('play')

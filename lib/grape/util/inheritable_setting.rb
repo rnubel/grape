@@ -55,6 +55,14 @@ module Grape
         point_in_time_copies.map { |cloned_one| cloned_one.inherit_from parent }
       end
 
+      def merge(other)
+        #self.namespace = other.namespace
+        self.namespace_inheritable.merge_with(other.namespace_inheritable)
+        self.namespace_stackable.merge_with(other.namespace_stackable)
+        #self.route = other.route
+        #self.api_class = other.api_class
+      end
+
       # Create a point-in-time copy of this settings instance, with clones of
       # all our values. Note that, should this instance's parent be set or
       # changed via #inherit_from, it will copy that inheritance to any copies

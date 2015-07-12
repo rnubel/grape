@@ -25,6 +25,12 @@ module Grape
         values.merge(new_hash)
       end
 
+      def merge_with(other)
+        other.keys.each do |k|
+          self[k] = other[k]
+        end
+      end
+
       def keys
         (new_values.keys + inherited_values.keys).sort.uniq
       end

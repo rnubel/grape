@@ -26,6 +26,14 @@ module Grape
         new_values.delete key
       end
 
+      def merge_with(other)
+        other.keys.each do |k|
+          other[k].each do |v|
+            self[k] = v
+          end
+        end
+      end
+
       attr_writer :new_values
 
       def keys

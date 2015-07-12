@@ -73,23 +73,41 @@ module Grape
           mounts = { mounts => '/' } unless mounts.respond_to?(:each_pair)
           mounts.each_pair do |app, path|
             in_setting = inheritable_setting
+            target = app
 
-            clone = Class.new(app)
-            clone.endpoints.concat(app.endpoints.map(&:copy))
-            clone.endpoints.each do |e|
-              e.inheritable_setting.inherit_from clone.inheritable_setting
-              e.top_level_setting.inherit_from clone.top_level_setting
-            end
+            if app.respond_to?(:inheritable_setting, true)
+              target = Class.new(app)
+              #target.inherit_settings(inheritable_setting)
 
-            if clone.respond_to?(:inheritable_setting, true)
+              #require 'pry';binding.pry
+              target.top_level_setting   = app.top_level_setting.point_in_time_copy
+              target.inheritable_setting = app.inheritable_setting.point_in_time_copy
+              target.inheritable_setting.inherit_from(target.top_level_setting)
+              target.inheritable_setting.merge(inheritable_setting)
+
               mount_path = Rack::Mount::Utils.normalize_path(path)
-              clone.top_level_setting.namespace_stackable[:mount_path] =  mount_path
+              target.top_level_setting.namespace_stackable[:mount_path] =  mount_path
 
-              clone.inherit_settings(inheritable_setting)
+              target.endpoints.concat(app.endpoints.map(&:copy))
+              target.endpoints.each do |e|
+                e.inheritable_setting.inherit_from target.inheritable_setting
+                e.top_level_setting.inherit_from target.top_level_setting
 
-              in_setting = clone.top_level_setting
+                # recurse, move me plz
+                e.endpoints && e.endpoints.each do |e2|
+                  e2.inheritable_setting.inherit_from target.inheritable_setting
+                  e2.top_level_setting.inherit_from target.top_level_setting
+                end
 
-              clone.change!
+                # moved from Api#inherit_settings
+                e.reset_routes!
+                @routes = nil
+
+              end
+
+              in_setting = target.top_level_setting
+
+              target.change!
               change!
             end
 
@@ -97,7 +115,7 @@ module Grape
               in_setting,
               method: :any,
               path: path,
-              app: clone,
+              app: target,
               for: self
             )
           end
